@@ -217,3 +217,53 @@ export const getAllMoneyTrackerData = async (req, res) => {
     }
   };
   
+  export const GetIncome = async (req, res) => {
+    try {
+      // Aggregate to fetch credited transactions and sum the credited amounts
+      const creditTransactions = await Money_Tracker.aggregate([
+        { $match: { transactionType: 'credited' } },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: { $toDouble: "$amount" } }, // Sum of credited amounts
+          },
+        },
+      ]);
+  
+      // Aggregate to fetch debited transactions and sum the debited amounts
+      const debitTransactions = await Money_Tracker.aggregate([
+        { $match: { transactionType: 'debited' } },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: { $toDouble: "$amount" } }, // Sum of debited amounts
+          },
+        },
+      ]);
+  
+      // If there are no credit transactions or debit transactions, ensure default values
+      const totalCreditAmount = creditTransactions.length > 0 ? creditTransactions[0].totalAmount : 0;
+      const totalDebitAmount = debitTransactions.length > 0 ? debitTransactions[0].totalAmount : 0;
+  
+      // Calculate the total income (credited amount - debited amount)
+      const totalIncome = totalCreditAmount - totalDebitAmount;
+  
+      console.log("Credit Transactions:", creditTransactions);
+      console.log("Debit Transactions:", debitTransactions);
+      console.log("Total Income:", totalIncome);
+
+  
+      // Send a success response with the retrieved data and total amounts
+      return res.status(200).json({
+        totalIncome: totalIncome, // Calculated total income (credited - debited)
+      });
+    } catch (error) {
+      // Handle any errors and send an error response
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch credited transaction details",
+        error,
+      });
+    }
+  };
+  
