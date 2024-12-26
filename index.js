@@ -9,7 +9,7 @@ import cors from 'cors'
 dotenv.config()
 const app = express()
 
-const port  = process.env.PORT
+const port  = process.env.X_ZOHO_CATALYST_LISTEN_PORT
 const db = process.env.MONGODB
 
 
@@ -20,7 +20,7 @@ app.use(cors({
     credentials:true
 }))
 
-app.listen(port, ()=>{
+app.listen(process.env.X_ZOHO_CATALYST_LISTEN_PORT, ()=>{
     console.log("Server Is Running on Port: ",port);
     
 })
