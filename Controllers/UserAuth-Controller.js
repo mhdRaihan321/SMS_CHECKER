@@ -151,3 +151,69 @@ export const getAllMoneyTrackerData = async (req, res) => {
     }
   };
   
+  export const allDebited = async (req, res) => {
+    try {
+      // Use aggregate to fetch debited transactions and sum the debited amounts
+      const debitedTransactions = await Money_Tracker.aggregate([
+        { $match: { transactionType: 'debited' } }, // Filter debited transactions
+        {
+          $group: {
+            _id: null, // No grouping, we're calculating the total sum
+            totalAmount: { $sum: { $toDouble: "$amount" } }, // Sum of the 'amount' field (ensure it's a number)
+          },
+        },
+      ]);
+  
+      // Fetch the details of debited transactions (excluding total)
+      const transactionDetails = await Money_Tracker.find({ transactionType: 'debited' });
+  
+      // Send a success response with the retrieved data and total debited amount
+      return res.status(200).json({
+        message: "All transaction details fetched successfully",
+        data: transactionDetails,
+        totalAmount: debitedTransactions.length > 0 ? debitedTransactions[0].totalAmount : 0, // Total debited amount
+      });
+    } catch (error) {
+      // Handle any errors and send an error response
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch transaction details",
+        error,
+      });
+    }
+  };
+
+
+  
+  export const allCredited = async (req, res) => {
+    try {
+      // Use aggregate to fetch credited transactions and sum the credited amounts
+      const creditTransactions = await Money_Tracker.aggregate([
+        { $match: { transactionType: 'credited' } }, // Filter credited transactions
+        {
+          $group: {
+            _id: null, // No grouping, we're calculating the total sum
+            totalAmount: { $sum: { $toDouble: "$amount" } }, // Sum of the 'amount' field (ensure it's a number)
+          },
+        },
+      ]);
+  
+      // Fetch the details of credited transactions (excluding total)
+      const transactionDetails = await Money_Tracker.find({ transactionType: 'credited' });
+  
+      // Send a success response with the retrieved data and total credited amount
+      return res.status(200).json({
+        message: "All credited transaction details fetched successfully",
+        data: transactionDetails,
+        totalAmount: creditTransactions.length > 0 ? creditTransactions[0].totalAmount : 0, // Total credited amount
+      });
+    } catch (error) {
+      // Handle any errors and send an error response
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch credited transaction details",
+        error,
+      });
+    }
+  };
+  
