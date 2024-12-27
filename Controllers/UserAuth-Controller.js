@@ -324,7 +324,7 @@ export const getAllMoneyTrackerData = async (req, res) => {
   export const Delete_SMS = async (req, res) => {
     try {
       // Assuming the expense or SMS is identified by an 'id' passed in the request params
-      const { id } = req.body;
+      const { id } = req.params;
   
       // Ensure that an ID is provided
       if (!id) {
