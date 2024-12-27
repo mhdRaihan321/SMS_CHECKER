@@ -266,4 +266,97 @@ export const getAllMoneyTrackerData = async (req, res) => {
       });
     }
   };
+
+
+
+
+  export const Edit_Details = async (req, res) => {
+    try {
+      // Extract transaction ID and the updated details from the request body
+      const { transactionId, account, transactionType, amount, name, date } = req.body;
+  
+      // Validate that all necessary fields are provided
+      if (!transactionId || !account || !transactionType || !amount || !name || !date) {
+        return res.status(400).json({
+          success: false,
+          message: 'All fields are required',
+        });
+      }
+  
+      // Find the transaction by ID
+      const transaction = await Money_Tracker.findById(transactionId);
+  
+      if (!transaction) {
+        return res.status(404).json({
+          success: false,
+          message: 'Transaction not found',
+        });
+      }
+  
+      // Update the transaction details
+      transaction.account = account;
+      transaction.transactionType = transactionType;
+      transaction.amount = amount;
+      transaction.name = name;
+      transaction.date = date;
+  
+      // Save the updated transaction
+      await transaction.save();
+  
+      return res.status(200).json({
+        success: true,
+        message: 'Transaction updated successfully',
+        data: transaction, // Return the updated transaction
+      });
+  
+    } catch (error) {
+      // Handle any errors and send an error response
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to edit transaction details",
+        error: error.message,
+      });
+    }
+  };
+  
+
+  export const Delete_SMS = async (req, res) => {
+    try {
+      // Assuming the expense or SMS is identified by an 'id' passed in the request params
+      const { id } = req.body;
+  
+      // Ensure that an ID is provided
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: "No transaction ID provided",
+        });
+      }
+  
+      // Assuming you are using a database model named 'Expense' or similar
+      const deletedExpense = await Money_Tracker.findByIdAndDelete(id);
+  
+      // If no transaction is found with the provided ID
+      if (!deletedExpense) {
+        return res.status(404).json({
+          success: false,
+          message: "Expense not found",
+        });
+      }
+  
+      // If deletion is successful
+      return res.status(200).json({
+        success: true,
+        message: "Expense deleted successfully",
+      });
+    } catch (error) {
+      // Handle any errors and send an error response
+      return res.status(500).json({
+        success: false,
+        message: "Failed to delete transaction",
+        error,
+      });
+    }
+  };
   

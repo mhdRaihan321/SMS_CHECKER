@@ -1,5 +1,5 @@
 import express from 'express'
-import { allCredited, allDebited, Fetch_SMS_FROM_PHONE, getAllMoneyTrackerData, GetIncome, Login, Register } from '../Controllers/UserAuth-Controller.js'
+import {Delete_SMS, allCredited, allDebited, Edit_Details, Fetch_SMS_FROM_PHONE, getAllMoneyTrackerData, GetIncome, Login, Register } from '../Controllers/UserAuth-Controller.js'
 import { authenticate } from '../MiddileWire/authenticate.js'
 
 const router = express.Router()
@@ -11,6 +11,8 @@ router.get('/get-all-info-fetched-sms-bank', getAllMoneyTrackerData);
 router.get('/get-all-debited', allDebited)
 router.get('/get-all-credited', allCredited)
 router.get('/get-income', GetIncome)
+router.put('/edit-sms-bank', Edit_Details)
+router.delete('/delete-sms-bank', Delete_SMS)
 router.get('/get-user',authenticate, (req,res)=>{
     res.status(200).json({
         status:true,
