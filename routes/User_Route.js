@@ -12,7 +12,7 @@ router.get('/get-all-debited', allDebited)
 router.get('/get-all-credited', allCredited)
 router.get('/get-income', GetIncome)
 router.put('/edit-sms-bank', Edit_Details)
-router.delete('/delete-sms-bank', Delete_SMS)
+router.delete('/delete-sms-bank/:id', Delete_SMS)
 router.get('/get-user',authenticate, (req,res)=>{
     res.status(200).json({
         status:true,
